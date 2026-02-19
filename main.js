@@ -789,3 +789,17 @@ async function exportTablePNG() {
     setTimeout(() => { try { el("toast").style.display = "none"; } catch(e){} }, 900);
   }, "image/png");
 }
+
+// ===== PWA: Register Service Worker =====
+(function registerSW() {
+  if (!("serviceWorker" in navigator)) return;
+
+  window.addEventListener("load", async () => {
+    try {
+      await navigator.serviceWorker.register("./sw.js", { scope: "./" });
+      // optional: console.log("SW registered");
+    } catch (e) {
+      // optional: console.log("SW register failed", e);
+    }
+  });
+})();
