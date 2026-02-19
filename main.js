@@ -711,7 +711,7 @@ setInterval(() => {
 }, 1000);
 
 // Restore last
-(function restore() {
+(async function restore() {
   const name = localStorage.getItem("last_city_name");
   const id = localStorage.getItem("last_city_id");
   const start = localStorage.getItem("last_start");
@@ -723,8 +723,24 @@ setInterval(() => {
   if (days) el("daysCount").value = days;
 
   el("cityLabel").textContent = name || "-";
-  setStatus(`Siap. Cari kota lalu klik hasil, kemudian muat jadwal.`);
+
+  // Jika pernah pilih kota → langsung load
+  if (id) {
+    setStatus("Memuat jadwal terakhir…");
+    loadCalendar();
+    return;
+  }
+
+  // Jika belum pernah → coba GPS otomatis
+  setStatus("Mendeteksi lokasi otomatis…");
+
+  try {
+    await gpsAutoLokasi({ autoLoad: true });
+  } catch (e) {
+    setStatus("Silakan cari kota untuk memulai.");
+  }
 })();
+
 
 
 function safeFileName(prefix) {
