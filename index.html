@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/x-icon" href="https://davidagusk.github.io/src/png/main-favicon.png" />
+  <title>Kalender Jadwal Ramadan 2026</title>
+</head>
+
+<body>
+  <div class="wrap">
+    <!-- Header -->
+    <div class="card top">
+      <div style="flex: 1 1 520px; min-width: 320px;">
+        <h1>Kalender Jadwal Ramadan 2026 (30 Hari)</h1>
+        <p class="sub">
+          Mulai <b>19 Februari 2026</b> (30 hari) • Menampilkan <b>Imsak + Sholat 5 Waktu</b> • Adzan otomatis (Subuh khusus) + pengingat sahur.
+        </p>
+        <div class="pillrow">
+          <div class="pill">Hari ini: <b id="todayText">-</b></div>
+          <div class="pill">Zona waktu: <b>Asia/Jakarta (WIB)</b></div>
+          <div class="pill">Kota: <b id="cityLabel">-</b></div>
+          <div class="pill">Ramadan hari ke-: <b id="dayIndex">-</b></div>
+        </div>
+      </div>
+
+      <div class="rightbox">
+        <div class="count">
+          <div>
+            <div class="small">Waktu sekarang</div>
+            <div class="big mono" id="clock">--:--:--</div>
+          </div>
+          <div style="text-align:right">
+            <div class="small">Menuju <b id="nextName">-</b></div>
+            <div class="big mono" id="countdown">--:--:--</div>
+          </div>
+        </div>
+
+        <div class="progresscard">
+          <div class="prow">
+            <div class="small" id="progressText">Memuat jadwal…</div>
+            <div class="mono" id="progressPct">0%</div>
+          </div>
+          <div class="pbar"><div class="pfill" id="progressFill"></div></div>
+          <div class="prow" style="margin-top:6px;">
+            <span class="small" id="progressSub">-</span>
+            <span class="mono" id="progressRemain">--:--:--</span>
+          </div>
+        </div>
+
+        <div class="status" id="statusBox">Siapkan kota & muat jadwal…</div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="card controls">
+      <div class="row">
+        <div class="field" style="flex: 2 1 320px; min-width: 280px;">
+          <label for="cityQuery">Cari kota/kab</label>
+          <input id="cityQuery" placeholder="Ketik: Jakarta / Lubuklinggau / Musi Rawas / Yogyakarta …" autocomplete="off" />
+          <div class="suggest" id="suggestBox"></div>
+        </div>
+
+        <!-- ID kota disimpan (otomatis), disembunyikan -->
+        <input id="cityId" type="hidden" />
+
+        <div class="field" style="min-width: 220px;">
+          <label for="notifMode">Notifikasi</label>
+          <select id="notifMode">
+            <option value="toast">Toast (popup di halaman)</option>
+            <option value="system">System Notification (izin browser)</option>
+            <option value="both" selected>Toast + System</option>
+            <option value="off">Off</option>
+          </select>
+        </div>
+
+        <div class="field" style="min-width: 180px;">
+          <label>&nbsp;</label>
+          <button class="btn" id="gpsBtn" type="button">GPS Auto Lokasi</button>
+        </div>
+
+        <div class="field" style="min-width: 220px;">
+          <label>&nbsp;</label>
+          <button class="btn" id="loadBtn" type="button">Muat Kalender 30 Hari</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="startDate">Tanggal mulai Ramadan</label>
+          <input id="startDate" class="mono" value="2026-02-19" />
+        </div>
+        <div class="field">
+          <label for="daysCount">Jumlah hari</label>
+          <input id="daysCount" class="mono" value="30" />
+        </div>
+        <div class="field">
+          <label>&nbsp;</label>
+          <button class="btn" id="notifBtn" type="button">Minta Izin Notifikasi</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabel saja -->
+    <div class="card gridwrap">
+      <div class="switchbar">
+        <div class="hint" id="rangeText">-</div>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center; justify-content:flex-end; flex-wrap:wrap;">
+        <button class="btn" id="exportPngBtn" type="button">Export PNG</button>
+      </div>
+      <div class="tablewrap" id="tablewrap" style="display:block">
+        <table>
+          <thead>
+            <tr>
+              <th>Tanggal</th>
+              <th>Imsak</th>
+              <th>Subuh</th>
+              <th>Dzuhur</th>
+              <th>Ashar</th>
+              <th>Maghrib</th>
+              <th>Isya</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+
+    <!-- Doa -->
+    <div class="card" style="padding: 16px;">
+      <h2 style="margin:0 0 10px; font-size:18px; letter-spacing:.2px;">Doa-doa (Ringkas)</h2>
+
+      <details open>
+        <summary>Doa Niat Puasa Ramadan</summary>
+        <div class="doa">
+          <div class="arab">نَوَيْتُ صَوْمَ غَدٍ عَنْ أَدَاءِ فَرْضِ شَهْرِ رَمَضَانَ هٰذِهِ السَّنَةِ لِلّٰهِ تَعَالَى</div>
+          <p><b>Latin:</b> Nawaitu shauma ghadin ‘an adā’i fardhi syahri ramadhāna hādzihis-sanati lillāhi ta‘ālā.</p>
+          <p><b>Arti:</b> Saya niat berpuasa esok hari untuk menunaikan kewajiban puasa Ramadan tahun ini karena Allah Ta’ala.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Doa Berbuka Puasa</summary>
+        <div class="doa">
+          <div class="arab">اَللّٰهُمَّ لَكَ صُمْتُ وَبِكَ آمَنْتُ وَعَلَى رِزْقِكَ أَفْطَرْتُ</div>
+          <p><b>Latin:</b> Allāhumma laka shumtu wa bika āmantu wa ‘alā rizqika afthartu.</p>
+          <p><b>Arti:</b> Ya Allah, kepada-Mu aku berpuasa, kepada-Mu aku beriman, dan dengan rezeki-Mu aku berbuka.</p>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <h3 id="toastTitle">Notifikasi</h3>
+    <p id="toastMsg">-</p>
+    <div class="actions">
+      <button id="toastClose" type="button">Tutup</button>
+      <button id="toastMute" type="button">Matikan suara 5 menit</button>
+    </div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="main.js"></script>
+
+</body>
+</html>
