@@ -2,15 +2,15 @@
 const TIMEZONE = "Asia/Jakarta";
 
 // Audio
-const AUDIO_IMSAK = "imsak.mp3";     // imsak + pengingat sahur
-const AUDIO_ADZAN = "adzan.mp3";     // dzuhur, ashar, maghrib, isya
-const AUDIO_SUBUH = "subuh.mp3";     // subuh khusus
+const AUDIO_IMSAK = "imsak.mp3"; // imsak + pengingat sahur
+const AUDIO_ADZAN = "adzan.mp3"; // dzuhur, ashar, maghrib, isya
+const AUDIO_SUBUH = "subuh.mp3"; // subuh khusus
 
 const V3 = {
   citySearch: (q) => `https://api.myquran.com/v3/sholat/kota/cari/${encodeURIComponent(q)}`,
   today: (id) => `https://api.myquran.com/v3/sholat/jadwal/${encodeURIComponent(id)}/today`,
   byISO: (id, iso) => `https://api.myquran.com/v3/sholat/jadwal/${encodeURIComponent(id)}/${encodeURIComponent(iso)}`,
-  byYMD: (id, y, m, d) => `https://api.myquran.com/v3/sholat/jadwal/${encodeURIComponent(id)}/${y}/${m}/${d}`
+  byYMD: (id, y, m, d) => `https://api.myquran.com/v3/sholat/jadwal/${encodeURIComponent(id)}/${y}/${m}/${d}`,
 };
 
 // Urutan tampilan
@@ -33,19 +33,23 @@ function fmtTodayLong() {
     weekday: "long",
     year: "numeric",
     month: "long",
-    day: "2-digit"
+    day: "2-digit",
   }).format(new Date());
 }
 
 function partsInTZ(date = new Date()) {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone: TIMEZONE,
-    year: "numeric", month: "2-digit", day: "2-digit",
-    hour: "2-digit", minute: "2-digit", second: "2-digit",
-    hour12: false
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
   }).formatToParts(date);
 
-  const get = (t) => parts.find(p => p.type === t)?.value;
+  const get = (t) => parts.find((p) => p.type === t)?.value;
   return { y: get("year"), m: get("month"), d: get("day"), hh: get("hour"), mm: get("minute"), ss: get("second") };
 }
 
@@ -117,7 +121,9 @@ function toast(title, msg) {
 
   if ((mode === "system" || mode === "both") && "Notification" in window) {
     if (Notification.permission === "granted") {
-      try { new Notification(title, { body: msg }); } catch (e) {}
+      try {
+        new Notification(title, { body: msg });
+      } catch (e) {}
     }
   }
 }
@@ -150,15 +156,15 @@ async function getJadwalV3(cityId, iso) {
   const ck = cacheKey(cityId, iso);
   const cached = localStorage.getItem(ck);
   if (cached) {
-    try { return JSON.parse(cached); } catch (e) {}
+    try {
+      return JSON.parse(cached);
+    } catch (e) {}
   }
 
-  const isToday = (iso === ymdInTZ());
+  const isToday = iso === ymdInTZ();
   const [y, m, d] = iso.split("-");
 
-  const candidates = isToday
-    ? [V3.today(cityId), V3.byISO(cityId, iso), V3.byYMD(cityId, y, m, d)]
-    : [V3.byISO(cityId, iso), V3.byYMD(cityId, y, m, d)];
+  const candidates = isToday ? [V3.today(cityId), V3.byISO(cityId, iso), V3.byYMD(cityId, y, m, d)] : [V3.byISO(cityId, iso), V3.byYMD(cityId, y, m, d)];
 
   let lastErr = null;
   for (const url of candidates) {
@@ -244,13 +250,10 @@ async function fetchAllWithRetry(dates, cityId, conc) {
   while (pending.size > 0) {
     const list = Array.from(pending);
 
-    setStatus(
-      `Mengambil jadwal… <b>${results.size}/${dates.length}</b> hari sudah siap. ` +
-      `Sisa <b>${pending.size}</b> hari.`
-    );
+    setStatus(`Mengambil jadwal… <b>${results.size}/${dates.length}</b> hari sudah siap. ` + `Sisa <b>${pending.size}</b> hari.`);
 
     const batch = await runPool(
-      list.map(iso => async () => {
+      list.map((iso) => async () => {
         try {
           const payload = await getJadwalV3(cityId, iso);
           return { iso, ok: true, payload };
@@ -258,7 +261,7 @@ async function fetchAllWithRetry(dates, cityId, conc) {
           return { iso, ok: false };
         }
       }),
-      conc
+      conc,
     );
 
     for (const r of batch) {
@@ -273,7 +276,7 @@ async function fetchAllWithRetry(dates, cityId, conc) {
         setStatus(`Masih memuat… koneksi/API sedang tidak stabil. Silakan klik <b>Muat Kalender 30 Hari</b> lagi.`);
         break;
       }
-      await new Promise(r => setTimeout(r, 900));
+      await new Promise((r) => setTimeout(r, 900));
     }
   }
 
@@ -322,51 +325,53 @@ async function gpsAutoLokasi({ autoLoad = true } = {}) {
 
   setStatus("Mendeteksi lokasi GPS…");
 
-  navigator.geolocation.getCurrentPosition(async (pos) => {
-    try {
-      const lat = pos.coords.latitude;
-      const lon = pos.coords.longitude;
+  navigator.geolocation.getCurrentPosition(
+    async (pos) => {
+      try {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
 
-      // Reverse geocode via Nominatim (best-effort)
-      const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
-      const geo = await fetchJSON(url);
+        // Reverse geocode via Nominatim (best-effort)
+        const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
+        const geo = await fetchJSON(url);
 
-      const addr = geo?.address || {};
-      const guess = (addr.city || addr.town || addr.county || addr.municipality || addr.state_district || addr.region || "").trim();
+        const addr = geo?.address || {};
+        const guess = (addr.city || addr.town || addr.county || addr.municipality || addr.state_district || addr.region || "").trim();
 
-      if (!guess) {
-        setStatus("GPS terdeteksi, tapi tidak bisa menemukan nama kota. Silakan cari kota manual.");
-        return;
+        if (!guess) {
+          setStatus("GPS terdeteksi, tapi tidak bisa menemukan nama kota. Silakan cari kota manual.");
+          return;
+        }
+
+        el("cityQuery").value = guess;
+        setStatus(`GPS: ditemukan <b>${guess}</b>. Mencari di…`);
+
+        const list = await searchCityV3(guess);
+        if (!list.length) {
+          setStatus(`Tidak ada hasil untuk <b>${guess}</b>. Silakan cari manual.`);
+          return;
+        }
+
+        // Pilih hasil pertama
+        const item = list[0];
+        const id = item.id || item.id_lokasi || item.kode || item.value;
+        const name = item.lokasi || item.kabko || item.nama || item.label || guess;
+
+        el("cityId").value = id || "";
+        el("cityQuery").value = name;
+        el("cityLabel").textContent = name;
+
+        setStatus(`✅ GPS auto: <b>${name}</b>.`);
+        if (autoLoad) loadCalendar();
+      } catch (e) {
+        setStatus("GPS gagal diproses. Silakan cari kota manual.");
       }
-
-      el("cityQuery").value = guess;
-      setStatus(`GPS: ditemukan <b>${guess}</b>. Mencari di…`);
-
-      const list = await searchCityV3(guess);
-      if (!list.length) {
-        setStatus(`Tidak ada hasil untuk <b>${guess}</b>. Silakan cari manual.`);
-        return;
-      }
-
-      // Pilih hasil pertama
-      const item = list[0];
-      const id = item.id || item.id_lokasi || item.kode || item.value;
-      const name = item.lokasi || item.kabko || item.nama || item.label || guess;
-
-      el("cityId").value = id || "";
-      el("cityQuery").value = name;
-      el("cityLabel").textContent = name;
-
-      setStatus(`✅ GPS auto: <b>${name}</b>.`);
-      if (autoLoad) loadCalendar();
-    } catch (e) {
-      setStatus("GPS gagal diproses. Silakan cari kota manual.");
-    }
-  },
-  () => {
-    setStatus("GPS ditolak / tidak tersedia. Silakan cari kota manual.");
-  },
-  { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 });
+    },
+    () => {
+      setStatus("GPS ditolak / tidak tersedia. Silakan cari kota manual.");
+    },
+    { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 },
+  );
 }
 
 // ========= Next event (untuk panel "Menuju") =========
@@ -380,9 +385,11 @@ function markCurrentLine() {
     const t = payload.times[k];
     if (!t) return null;
     return { k, label, at: new Date(`${todayISO}T${t}:00`).getTime() };
-  }).filter(Boolean).sort((a, b) => a.at - b.at);
+  })
+    .filter(Boolean)
+    .sort((a, b) => a.at - b.at);
 
-  const next = events.find(e => e.at > now) || null;
+  const next = events.find((e) => e.at > now) || null;
 
   const nextName = el("nextName");
   const countdown = el("countdown");
@@ -622,7 +629,10 @@ async function loadCalendar() {
   localStorage.setItem("last_days", String(days));
 
   const btn = el("loadBtn");
-  if (btn) { btn.disabled = true; btn.textContent = "Memuat…"; }
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "Memuat…";
+  }
 
   const results = await fetchAllWithRetry(dates, cityId, conc);
 
@@ -635,7 +645,10 @@ async function loadCalendar() {
   renderTable(dates);
   setStatus(`✅ Jadwal lengkap siap: <b>${results.size}/${dates.length}</b> hari.`);
 
-  if (btn) { btn.disabled = false; btn.textContent = "Muat Kalender 30 Hari"; }
+  if (btn) {
+    btn.disabled = false;
+    btn.textContent = "Muat Kalender 30 Hari";
+  }
 }
 
 // ========= Init + Events =========
@@ -689,11 +702,20 @@ el("loadBtn").addEventListener("click", loadCalendar);
 el("gpsBtn").addEventListener("click", () => gpsAutoLokasi({ autoLoad: true }));
 
 // Unlock audio on first interaction (autoplay policy)
-window.addEventListener("pointerdown", () => {
-  [audioImsak, audioAdzan, audioSubuh].forEach(a => {
-    a.play().then(() => { a.pause(); a.currentTime = 0; }).catch(() => {});
-  });
-}, { once: true });
+window.addEventListener(
+  "pointerdown",
+  () => {
+    [audioImsak, audioAdzan, audioSubuh].forEach((a) => {
+      a.play()
+        .then(() => {
+          a.pause();
+          a.currentTime = 0;
+        })
+        .catch(() => {});
+    });
+  },
+  { once: true },
+);
 
 // Tick
 setInterval(() => {
@@ -741,15 +763,13 @@ setInterval(() => {
   }
 })();
 
-
-
 function safeFileName(prefix) {
   const city = (el("cityLabel")?.textContent || "Kota")
     .replace(/[^\w\s-]/g, "")
     .trim()
     .replace(/\s+/g, "_");
 
-  const range = (el("rangeText")?.textContent || "Ramadan_2026")
+  const range = (el("rangeText")?.textContent || "Ramadan_2027")
     .replace(/[^\w\s-]/g, "")
     .trim()
     .replace(/\s+/g, "_");
@@ -791,8 +811,8 @@ async function exportTablePNG() {
   // Capture tabel
   const canvas = await html2canvas(tableWrap, {
     backgroundColor: null, // transparan (glassy). kalau mau putih: "#ffffff"
-    scale: 2,              // lebih tajam
-    useCORS: true
+    scale: 2, // lebih tajam
+    useCORS: true,
   });
 
   canvas.toBlob((blob) => {
@@ -802,7 +822,11 @@ async function exportTablePNG() {
     }
     downloadBlob(blob, safeFileName("Jadwal_Ramadan") + ".png");
     toast("Export selesai", "PNG berhasil diunduh.");
-    setTimeout(() => { try { el("toast").style.display = "none"; } catch(e){} }, 900);
+    setTimeout(() => {
+      try {
+        el("toast").style.display = "none";
+      } catch (e) {}
+    }, 900);
   }, "image/png");
 }
 
