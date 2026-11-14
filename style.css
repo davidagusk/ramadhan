@@ -1,15 +1,17 @@
 :root{
-  --bg1:#0b1220;
-  --bg2:#1a2b4a;
-  --card: rgba(255,255,255,.12);
-  --card2: rgba(255,255,255,.07);
-  --stroke: rgba(255,255,255,.18);
-  --text: rgba(255,255,255,.92);
-  --muted: rgba(255,255,255,.68);
-  --good: rgba(112, 255, 195, .92);
-  --warn: rgba(255, 210, 110, .92);
-  --bad: rgba(255, 120, 120, .92);
-  --shadow: 0 18px 40px rgba(0,0,0,.35);
+  --bg1:#071c1a;
+  --bg2:#123b35;
+  --card: rgba(21, 81, 69, .42);
+  --card2: rgba(8, 38, 34, .58);
+  --stroke: rgba(242, 205, 112, .24);
+  --text: rgba(255,250,232,.96);
+  --muted: rgba(232,239,218,.72);
+  --good: rgba(117, 224, 174, .96);
+  --warn: rgba(242, 205, 112, .96);
+  --bad: rgba(255, 137, 119, .96);
+  --gold: #f2cd70;
+  --teal: #75e0ae;
+  --shadow: 0 18px 40px rgba(1, 18, 15, .42);
   --radius: 22px;
   --radius2: 16px;
 }
@@ -22,9 +24,9 @@ body{
   color: var(--text);
   min-height:100vh;
   background:
-    radial-gradient(1200px 600px at 20% 10%, rgba(120,160,255,.35), transparent 55%),
-    radial-gradient(900px 500px at 80% 20%, rgba(120,255,210,.18), transparent 60%),
-    radial-gradient(800px 600px at 50% 100%, rgba(255,180,120,.18), transparent 55%),
+    radial-gradient(1200px 600px at 20% 10%, rgba(242,205,112,.22), transparent 55%),
+    radial-gradient(900px 500px at 80% 20%, rgba(117,224,174,.20), transparent 60%),
+    radial-gradient(800px 600px at 50% 100%, rgba(190,116,72,.18), transparent 55%),
     linear-gradient(160deg, var(--bg1), var(--bg2));
   padding: 22px 14px 44px;
 }
@@ -155,7 +157,7 @@ h1{
   height: 100%;
   width: 0%;
   border-radius: 999px;
-  background: rgba(120,255,210,.65);
+  background: linear-gradient(90deg, var(--teal), var(--gold));
   transition: width .5s ease;
 }
 
@@ -199,7 +201,7 @@ input, select, button{
   padding: 12px 12px;
   border-radius: 14px;
   border: 1px solid var(--stroke);
-  background: rgba(10,15,25,.35);
+  background: rgba(4, 28, 25, .48);
   color: var(--text);
   outline: none;
   font-size: 14px;
@@ -350,8 +352,8 @@ input::placeholder{ color: rgba(255,255,255,.45); }
 }
 
 .today{
-  outline: 2px solid rgba(112,255,195,.35);
-  box-shadow: 0 0 0 6px rgba(112,255,195,.08);
+  outline: 2px solid rgba(117,224,174,.55);
+  box-shadow: 0 0 0 6px rgba(117,224,174,.10);
 }
 
 .nowline{
@@ -386,7 +388,7 @@ thead th{
   position: sticky;
   top: 0;
   z-index: 1;
-  background: rgba(15, 22, 40, .85);
+  background: rgba(8, 40, 34, .92);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255,255,255,.12);
@@ -418,7 +420,7 @@ tbody tr:hover{ background: rgba(255,255,255,.06); }
   width: min(420px, calc(100vw - 24px));
   border-radius: 18px;
   border: 1px solid rgba(255,255,255,.18);
-  background: rgba(20, 28, 52, .75);
+  background: rgba(8, 40, 34, .88);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   box-shadow: 0 22px 50px rgba(0,0,0,.45);
